@@ -1,1 +1,249 @@
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
 
+/**
+ * This class implements quicksort and mergesort.
+ * Furthermore, it contains methods to generate
+ * array lists.
+ *
+ * @author Mairin Kelly and Keegan Richardson
+ * @version 2/17/23
+ */
+public class ArrayListSorter2 {
+    public static int threshold;
+    public static String pivot;
+
+    /**
+     * This is the driver method for mergeSort.
+     * @param list
+     * @param thresh
+     */
+    public static <T extends Comparable<? super T>> void sort(ArrayList<T> list, int thresh){
+        threshold = thresh;
+        mergesort(list);
+    }
+
+    /**
+     * This method performs a merge sort on the arraylist given. It
+     * will use compareTo to determine the correct ordering of elements.
+     *
+     * @param list, a generic ArrayList
+     */
+    private static <T extends Comparable<? super T>> void mergesort(ArrayList<T> list) {
+        int mid = (list.size()) / 2; // middle index
+        // continue merge sort until threshold is reached
+        if (list.size() <= threshold) {
+            insertionSort(list); // call insertion sort
+            return;
+        }
+
+        // split list into half
+        ArrayList<T> leftHalf = new ArrayList<T>();
+        ArrayList<T> rightHalf = new ArrayList<T>();
+
+        // fill the leftHalf list with left half
+        for (int i = 0; i < mid; i++) {
+            leftHalf.add(list.get(i));
+        }
+
+        // fill rightHalf list with right half
+        for (int i = mid; i < list.size(); i++) {
+            rightHalf.add(list.get(i));
+        }
+
+        // Mergesort left and right half of array
+
+        mergesort(leftHalf); // recursive calls
+        mergesort(rightHalf); // recursive calls
+
+        merge(list, leftHalf, rightHalf); // merge the halves
+    }
+
+    /**
+     * This is the merging portion of the mergesort
+     * implementation.
+     * @param list
+     * @param leftHalf
+     * @param rightHalf
+     * @param <T>
+     */
+    private static <T extends Comparable<? super T>> void merge(ArrayList<T> list, ArrayList<T> leftHalf, ArrayList<T> rightHalf) {
+        int leftSize = leftHalf.size();
+        int rightSize = rightHalf.size();
+
+        int i = 0, j = 0, k = 0;
+
+        // loop through all elements checking left and right index
+        while (i < leftSize && j < rightSize) {
+            if (leftHalf.get(i).compareTo(rightHalf.get(j)) < 0) {
+                list.set(k, leftHalf.get(i));
+                i++;
+            } else {
+                list.set(k, rightHalf.get(j));
+                j++;
+            }
+            k++;
+        }
+
+        while (i < leftSize) {
+            list.set(k, leftHalf.get(i));
+            i++;
+            k++;
+        }
+
+        while (j < rightSize) {
+            list.set(k, rightHalf.get(j));
+            j++;
+            k++;
+        }
+    }
+
+    /**
+     * This method implements insertion sort.
+     * @param list
+     * @param <T>
+     */
+    public static <T extends Comparable<? super T>> void insertionSort(ArrayList<T> list)
+    {
+        for (int j = 1; j < list.size(); j++)
+        {
+            T val = list.get(j);
+            int i = j - 1;
+            while ((i > -1) && (list.get(i)).compareTo(val) > 0)
+            {
+                list.set(i+1,list.get(i));
+                i--;
+            }
+            list.set(i+1,val);
+        }
+    }
+
+    /**
+     * This method performs quicksort on the arraylist given.
+     * @param <T>
+     */
+    public static <T extends Comparable<? super T>> void sort(ArrayList<T> list,String s)
+    {
+        pivot = s;
+        quicksort(list);
+    }
+
+    /**
+     * This is the driver method for quicksort.
+     * @param list
+     * @param <T>
+     */
+    private static <T extends Comparable<?super T>> void quicksort(ArrayList<T> list)
+    {
+        quicksort(list,0,list.size()-1);
+    }
+
+    /**
+     * This method contains the partitioning for the
+     * quicksort implementation.
+     * @param list
+     * @param lowIndex
+     * @param highIndex
+     * @param <T>
+     */
+    private static< T extends Comparable<?super T>> void quicksort(ArrayList<T> list, int lowIndex, int highIndex){
+
+        if(lowIndex >= highIndex)
+            return;
+
+        int leftPointer = lowIndex;
+        int rightPointer = highIndex;
+
+        int pivotIndex = 0;
+        if (pivot == "random")
+            pivotIndex = new Random().nextInt(highIndex - lowIndex) + lowIndex;
+        else if (pivot == "midToLast")
+            pivotIndex = highIndex - lowIndex;
+        else if (pivot == "first")
+            pivotIndex = lowIndex;
+        else
+            throw new IllegalArgumentException();
+        T pivot = list.get(pivotIndex);
+
+        swap(list, list.indexOf(pivot),highIndex);
+
+        while(leftPointer<rightPointer){
+            while( (pivot.compareTo(list.get(leftPointer)) >= 0) && leftPointer < rightPointer) {
+                leftPointer++;
+            }
+            while( (pivot.compareTo(list.get(rightPointer)) <= 0) && leftPointer< rightPointer){
+                rightPointer--;
+            }
+            swap(list, leftPointer, rightPointer);
+        }
+        swap(list,leftPointer, highIndex);
+
+        quicksort(list,lowIndex, leftPointer - 1);
+        quicksort(list,leftPointer+1, highIndex);
+    }
+
+    /**
+     * This method swaps the elements at the
+     * given indices.
+     * @param list
+     * @param index1
+     * @param index2
+     * @param <T>
+     */
+    private static <T> void swap(ArrayList<T> list, int index1, int index2){
+        T temp = list.get(index1);
+        list.set(index1,list.get(index2));
+        list.set(index2,temp);
+    }
+
+
+    /**
+     * This method generates and returns an arraylist
+     * of integers 1 to size in ascending order.
+     * @param size
+     * @return
+     */
+    public static ArrayList<Integer> generateAscending(int size)
+    {
+        ArrayList<Integer> arr = new ArrayList<Integer>();
+        for (int i = 0; i < size; i++)
+        {
+            arr.add(i+1);
+        }
+        return arr;
+    }
+
+    /**
+     * This method generates and returns an ArrayList of
+     * integers 1 to size in permuted order (random).
+     * @param size
+     * @return
+     */
+    public static ArrayList<Integer> generatePermuted(int size)
+    {
+        ArrayList<Integer> arr = new ArrayList<Integer>();
+        for (int i = 0; i < size; i++)
+        {
+            arr.add(i+1);
+        }
+        Collections.shuffle(arr);
+        return arr;
+    }
+
+    /**
+     * This method generates and returns an arraylist
+     * of integers 1 to size in descending order.
+     * @param size
+     * @return
+     */
+    public static ArrayList<Integer> generateDescending(int size)
+    {
+        ArrayList<Integer> arr = new ArrayList<Integer>();
+        for (int i = size; i > 0; i--)
+        {
+            arr.add(i);
+        }
+        return arr;
+    }
+}
